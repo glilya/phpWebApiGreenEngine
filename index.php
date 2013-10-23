@@ -6,3 +6,5 @@
  * Time: 18:35
  */
 
+require_once('system/bootstrap.php');
+\WebApiGreenEngine\Core::route();
