@@ -18,7 +18,16 @@ class Core {
 
     private static function getAllApiMethods () {
 
+        /**
+         * План реализации этой функции,
+         *  * Получаем список классов, рефлексируем все
+         *  * @webApiClassDescription - строчка описания класса
+         *  * @webApiMethodDescription - строчка описания метода
+         *  * @webApiProtocolType - Тип протокола вызова,
+         */
+
         $out = array();
+
         $files = array_values(array_filter(scandir('system/classes/WebApiGreenEngine/Controllers'), function($item) {
             $ignored = array('.','..','class.Generic.php');
             return (!in_array($item, $ignored));
@@ -26,10 +35,16 @@ class Core {
         $out['classes'] = array_map(function ($item) {
             return array('name' => str_replace(array('class.', '.php'), '', $item));
         }, $files);
+
+        // Reflect classes
         for ($i = 0; $i < sizeof($out['classes']); $i++) {
-            $rc = new \ReflectionClass('\\WebApiGreenEngine\\Controllers\\'.$out['classes'][$i]['name']);
-            $out['classes'][$i]['description_class'] = str_replace(array('/**','*/'), '', $rc->getDocComment());
-            $out['classes'][$i]['methods'] = array();
+            $reflectObj = new \ReflectionClass('\\WebApiGreenEngine\\Controllers\\'.$out['classes'][$i]['name']);
+
+            $headComment = explode("\r\n", $reflectObj->getDocComment());
+            foreach ($headComment as $line)
+                if (strpos($line, '@webApiClassDescription') !== false)
+                    $out['classes'][$i]['description'] = trim(str_replace('* @webApiClassDescription', '', $line));
+            //$out['classes'][$i]['debug'] = $headComment;
         }
 
         return $out;

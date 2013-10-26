@@ -11,6 +11,7 @@ namespace WebApiGreenEngine;
 
 class Common {
     public static function jecho (array $arr) {
+        header('Content-Type: application/json');
         echo(json_encode($arr));
     }
 } 
